@@ -4,7 +4,7 @@
 <h1 align="center">
   <img src="https://www.hltv.org/img/static/TopLogo2x.png" alt="HLTV logo" width="200">
   <br>
-  The unofficial HLTV Node.js API
+  The unofficial HLTV Node.js API (fork since the original developer stopped developing
   <br>
 </h1>
 
@@ -40,7 +40,7 @@ Table of contents
 
 ## Installation
 
-[![NPM](https://nodei.co/npm/hltv.png)](https://nodei.co/npm/hltv/)
+[![NPM](https://nodei.co/npm/hltv.png)](https://nodei.co/npm/hltv-next/)
 
 ## Usage
 
