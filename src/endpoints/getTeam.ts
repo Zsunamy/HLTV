@@ -116,7 +116,7 @@ export const getTeam =
     const news = $('#newsBox a')
       .toArray()
       .map((el) => ({
-        name: el.contents().eq(1).text(),
+        title: el.contents().eq(1).text(),
         link: el.attr('href')
       }))
 

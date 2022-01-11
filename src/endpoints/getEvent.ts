@@ -188,7 +188,7 @@ export const getEvent =
     const news = $('.news .item')
       .toArray()
       .map((el) => ({
-        name: el.find('.flag-align .text-ellipsis').text(),
+        title: el.find('.flag-align .text-ellipsis').text(),
         link: el.find('a').attr('href')
       }))
 
