@@ -98,9 +98,7 @@ export const getEvent =
         const otherPrize =
           el.find('.prizeMoney').first().next().text() || undefined
 
-        const qualifiesFor = !!otherPrize
-          ? relatedEvents.find((event) => event.name === otherPrize)
-          : undefined
+        const qualifiesFor = relatedEvents.find((event) => otherPrize?.replace(/S\d+.+/, "").includes(event.name) || event.name.includes(otherPrize?.replace(/S\d+.+/, "")!))
 
         return {
           place: el.children().eq(1).text(),
