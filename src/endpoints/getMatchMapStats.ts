@@ -127,7 +127,6 @@ export const getMatchMapStats =
           team2Rounds: Number(t2)
         }))
     }
-
     const map = fromMapName(m$('.match-info-box').contents().eq(3).trimText()!)
     const date = m$('.match-info-box span[data-time-format]').numFromAttr(
       'data-unix'
@@ -401,7 +400,6 @@ export function getPlayerStats(m$: HLTVPage, p$: HLTVPage) {
 }
 
 export function getPerformanceOverview(p$: HLTVPage) {
-  console.log(p$.html())
 
   return p$('.overview-table tr')
     .toArray()
