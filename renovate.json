@@ -1,7 +1,7 @@
 {
   "extends": ["config:base", ":pinAllExceptPeerDependencies"],
   "ignorePaths": [],
-  "ignoreDeps": ["socket.io-client"],
+  "ignoreDeps": ["socket.io-client", "puppeteer"],
   "automerge": true,
   "major": {
     "automerge": false

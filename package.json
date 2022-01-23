@@ -1,6 +1,6 @@
 {
   "name": "hltv-next",
-  "version": "3.3.9",
+  "version": "3.3.10",
   "description": "The unofficial HLTV Node.js API",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -53,7 +53,7 @@
   },
   "dependencies": {
     "cheerio": "1.0.0-rc.10",
-    "puppeteer": "13.1.1",
+    "puppeteer": "10.1.0",
     "request": "2.88.2",
     "socket.io-client": "2.4.0",
     "uuid": "8.3.2"
