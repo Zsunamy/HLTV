@@ -13,7 +13,7 @@ export const defaultLoadPage =
     new Promise<string>((resolve) => {
 				puppeteer.launch({
 				headless: true,
-				ignoreHTTPSErrors: true
+				ignoreHTTPSErrors: true,
 				args: ['--no-sandbox']
 			}).then((browser: any) => {
 				browser.newPage().then((page: any) => {
