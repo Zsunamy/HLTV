@@ -1,7 +1,6 @@
 import { Agent as HttpsAgent } from 'https'
 import { Agent as HttpAgent } from 'http'
 import * as request from 'request'
-const puppeteer = require('puppeteer')
 
 export interface HLTVConfig {
   loadPage: (url: string) => Promise<string>
