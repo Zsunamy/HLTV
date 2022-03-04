@@ -1,9 +1,12 @@
 import { stringify } from 'querystring'
 import { HLTVConfig } from '../config'
-import { HLTVScraper } from '../scraper'
+import { HLTVPage, HLTVScraper } from '../scraper'
+import { BestOfFilter } from '../shared/BestOfFilter'
+import { fromMapSlug, GameMap, toMapFilter } from '../shared/GameMap'
+import { RankingFilter } from '../shared/RankingFilter'
 import { Team } from '../shared/Team'
 import { Event } from '../shared/Event'
-import { fetchPage, getIdAt } from '../utils'
+import { fetchPage, getIdAt, notNull, sleep } from '../utils'
 
 export enum MatchEventType {
   All = 'All',
@@ -20,6 +23,16 @@ export interface GetMatchesArguments {
   eventId?: number
   eventType?: MatchEventType
   filter?: MatchFilter
+  startDate?: string
+  endDate?: string
+  rankingFilter?: RankingFilter
+  maps?: GameMap[]
+  bestOfX?: BestOfFilter
+  countries?: string[]
+  eventIds?: number[]
+  playerIds?: number[]
+  teamIds?: number[]
+  delayBetweenPageRequests?: number
 }
 
 export interface MatchPreview {
@@ -36,14 +49,23 @@ export interface MatchPreview {
 
 export const getMatches =
   (config: HLTVConfig) =>
-  async ({ eventId, eventType, filter }: GetMatchesArguments = {}): Promise<
-    MatchPreview[]
-  > => {
-    const query = stringify({
-      ...(eventId ? { event: eventId } : {}),
-      ...(eventType ? { eventType } : {}),
-      ...(filter ? { predefinedFilter: filter } : {})
-    })
+  async (options: GetMatchesArguments): Promise<MatchPreview[]> => {
+		const query = stringify({
+			...(options.startDate ? { startDate: options.startDate } : {}),
+      ...(options.endDate ? { endDate: options.endDate } : {}),
+      ...(options.rankingFilter
+        ? { rankingFilter: options.rankingFilter }
+        : {}),
+      ...(options.maps ? { map: options.maps.map(toMapFilter) } : {}),
+      ...(options.bestOfX ? { bestOfX: options.bestOfX } : {}),
+      ...(options.countries ? { country: options.countries } : {}),
+      ...(options.eventIds ? { event: options.eventIds } : {}),
+      ...(options.playerIds ? { player: options.playerIds } : {}),
+      ...(options.teamIds ? { team: options.teamIds } : {}),
+			...(options.eventId ? { event: options.eventId } : {}),
+			...(options.eventType ? { eventType: options.eventType } : {}),
+			...(options.filter ? { predefinedFilter: options.filter } : {})
+		})
 
     const $ = HLTVScraper(
       await fetchPage(`https://www.hltv.org/matches?${query}`, config.loadPage)
