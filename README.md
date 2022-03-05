@@ -4,7 +4,7 @@
 <h1 align="center">
   <img src="https://www.hltv.org/img/static/TopLogo2x.png" alt="HLTV logo" width="200">
   <br>
-  The unofficial HLTV Node.js API (fork since the original developer stopped developing
+  The unofficial HLTV Node.js API (fork since the original developer stopped developing)
   <br>
 </h1>
 
@@ -101,9 +101,11 @@ Parses all matches from the `hltv.org/matches/` page (1 request)
 
 |  Option   |                                              Type                                              | Default Value |                          Description                           |
 | :-------: | :--------------------------------------------------------------------------------------------: | :-----------: | :------------------------------------------------------------: |
-|  eventId  |                                            number?                                             |       -       |                  Filter matches by event ID.                   |
+|  eventIds |                                            number[]?                                           |       -       |           Filter matches by  a list of event IDs.              |
 | eventType | [MatchEventType](https://github.com/gigobyte/HLTV/blob/master/src/endpoints/getMatches.ts#L8)? |       -       |                 Filter matches by event type.                  |
 |  filter   |  [MatchFilter](https://github.com/gigobyte/HLTV/blob/master/src/endpoints/getMatches.ts#L14)?  |       -       | Filter matches by pre-set categories. Overrides other filters. |
+|  teamIds  |                                            number[]?                                           |       -       |           						          -      							       		  |
+
 
 ```javascript
 HLTV.getMatches().then((res) => {
@@ -469,10 +471,7 @@ Parses the info from the `hltv.org/results` page (1 request per page of results)
 |        startDate         |                                             string?                                             |       -       |                     -                      |
 |         endDate          |                                             string?                                             |       -       |                     -                      |
 |        matchType         | [ResultMatchType](https://github.com/gigobyte/HLTV/blob/master/src/endpoints/getResults.ts#L9)? |       -       |                     -                      |
-|      rankingFilter       |   [RankingFilter](https://github.com/gigobyte/HLTV/blob/master/src/shared/RankingFilter.ts)?    |       -       |                     -                      |
 |           maps           |        [GameMap](https://github.com/gigobyte/HLTV/blob/master/src/shared/GameMap.ts)[]?         |       -       |                     -                      |
-|        countries         |                                            string[]                                             |       -       |                     -                      |
-|         bestOfX          |    [BestOfFilter](https://github.com/gigobyte/HLTV/blob/master/src/shared/BestOfFilter.ts)?     |       -       |                     -                      |
 |      contentFilters      | [ContentFilter](https://github.com/gigobyte/HLTV/blob/master/src/endpoints/getResults.ts#L14)?  |       -       |                     -                      |
 |         eventIds         |                                            number[]?                                            |       -       |                     -                      |
 |        playerIds         |                                            number[]?                                            |       -       |                     -                      |

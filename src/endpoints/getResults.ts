@@ -3,7 +3,6 @@ import { HLTVConfig } from '../config'
 import { HLTVPage, HLTVScraper } from '../scraper'
 import { BestOfFilter } from '../shared/BestOfFilter'
 import { fromMapSlug, GameMap, toMapFilter } from '../shared/GameMap'
-import { RankingFilter } from '../shared/RankingFilter'
 import { fetchPage, getIdAt, notNull, sleep } from '../utils'
 
 export enum ResultsMatchType {
@@ -46,10 +45,7 @@ export interface GetResultsArguments {
   startDate?: string
   endDate?: string
   matchType?: ResultsMatchType
-  rankingFilter?: RankingFilter
   maps?: GameMap[]
-  bestOfX?: BestOfFilter
-  countries?: string[]
   contentFilters?: ContentFilter[]
   eventIds?: number[]
   playerIds?: number[]
@@ -65,12 +61,7 @@ export const getResults =
       ...(options.startDate ? { startDate: options.startDate } : {}),
       ...(options.endDate ? { endDate: options.endDate } : {}),
       ...(options.matchType ? { matchType: options.matchType } : {}),
-      ...(options.rankingFilter
-        ? { rankingFilter: options.rankingFilter }
-        : {}),
       ...(options.maps ? { map: options.maps.map(toMapFilter) } : {}),
-      ...(options.bestOfX ? { bestOfX: options.bestOfX } : {}),
-      ...(options.countries ? { country: options.countries } : {}),
       ...(options.contentFilters ? { content: options.contentFilters } : {}),
       ...(options.eventIds ? { event: options.eventIds } : {}),
       ...(options.playerIds ? { player: options.playerIds } : {}),

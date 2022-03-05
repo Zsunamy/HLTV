@@ -6,7 +6,7 @@ const log = (promise: Promise<any>) =>
     .catch((err) => console.log(err))
 
 // log(HLTV.getMatch({ id: 2346924 }))
- log(HLTV.getMatches({teamIds: [7532]}))
+// log(HLTV.getMatches({eventIds: [6257, 6395]}))
 // log(HLTV.getEvent({ id: 5741 }))
 // log(HLTV.getEvents())
 // log(HLTV.getMatchMapStats({ id: 115827 }))
@@ -20,5 +20,5 @@ const log = (promise: Promise<any>) =>
 // log(HLTV.getTeamStats({ id: 10566 }))
 // log(HLTV.getPastEvents({ startDate: '2019-3-1', endDate: '2019-3-29' }))
 // log(HLTV.getTeamRanking())
-// log(HLTV.getResults({ eventIds: [1617] }))
+ log(HLTV.getResults({ eventIds: [1617] }))
 // log(HLTV.getNews())
