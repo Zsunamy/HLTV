@@ -1,5 +1,5 @@
 {
-  "name": "hltv",
+  "name": "hltv-next",
   "version": "3.5.0",
   "description": "The unofficial HLTV Node.js API",
   "main": "lib/index.js",
@@ -23,10 +23,6 @@
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
-    "snapshotFormat": {
-      "escapeString": true,
-      "printBasicPrototype": true
-    },
     "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
     "moduleFileExtensions": [
       "ts",
@@ -44,22 +40,22 @@
   },
   "homepage": "https://github.com/gigobyte/HLTV#readme",
   "devDependencies": {
-    "@types/cheerio": "0.22.35",
-    "@types/jest": "29.5.12",
-    "@types/node": "18.19.24",
-    "@types/random-useragent": "0.3.3",
-    "@types/request": "2.48.12",
+    "@types/cheerio": "0.22.31",
+    "@types/jest": "29.5.1",
+    "@types/node": "18.15.11",
+    "@types/random-useragent": "0.3.1",
+    "@types/request": "2.48.8",
     "@types/socket.io-client": "1.4.36",
-    "@types/user-agents": "1.0.4",
-    "jest": "29.7.0",
-    "prettier": "3.2.5",
-    "ts-jest": "29.1.2",
-    "ts-node": "10.9.2",
-    "typescript": "5.4.2"
+    "@types/user-agents": "1.0.2",
+    "jest": "29.5.0",
+    "prettier": "2.8.7",
+    "ts-jest": "29.1.0",
+    "ts-node": "10.9.1",
+    "typescript": "5.0.4"
   },
   "dependencies": {
     "cheerio": "1.0.0-rc.12",
-    "got-scraping": "4.0.4",
+    "got-scraping": "3.2.13",
     "socket.io-client": "2.4.0"
   }
 }
