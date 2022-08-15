@@ -1,5 +1,5 @@
 {
-  "name": "hltv",
+  "name": "hltv-next",
   "version": "3.5.0",
   "description": "The unofficial HLTV Node.js API",
   "main": "lib/index.js",
