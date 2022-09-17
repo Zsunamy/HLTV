@@ -1,6 +1,8 @@
 import { HLTVConfig } from '../config'
 import { HLTVScraper } from '../scraper'
 import { fetchPage } from '../utils'
+import { load } from "cheerio"
+import { xml2json } from "xml-js"
 
 export interface RssArticle {
     title: string
