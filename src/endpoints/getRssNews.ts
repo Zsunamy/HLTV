@@ -1,3 +1,4 @@
+import { stringify } from 'querystring'
 import { HLTVConfig } from '../config'
 import { HLTVScraper } from '../scraper'
 import { fetchPage } from '../utils'
