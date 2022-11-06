@@ -215,23 +215,33 @@ function getRoundHistory(
     score: el.attr('title')
   })
 
-  const team1Outcomes = $('.round-history-team-row')
-    .first()
-    .find('.round-history-outcome')
+  const topLeftHalf = $('.round-history-half')
+    .eq(0)
+    .find('img')
     .toArray()
     .map(getOutcome)
-  const team2Outcomes = $('.round-history-team-row')
-    .last()
-    .find('.round-history-outcome')
+  const bottomLeftHalf = $('.round-history-half')
+    .eq(2)
+    .find('img')
+    .toArray()
+    .map(getOutcome)
+  const topRightHalf = $('.round-history-half')
+    .eq(1)
+    .find('img')
+    .toArray()
+    .map(getOutcome)
+  const bottomRightHalf = $('.round-history-half')
+    .eq(3)
+    .find('img')
     .toArray()
     .map(getOutcome)
 
-  const doesTeam1StartAsCt = team1Outcomes[0].outcome.includes('ct')
+  const team1Outcomes = topLeftHalf.concat(topRightHalf)
+  const team2Outcomes = bottomLeftHalf.concat(bottomRightHalf)
 
-  const separatorIndex =
-    $('.round-history-team-row .round-history-bar').last().index() - 2
+  const doesTeam1StartAsCt = topLeftHalf.some((x) => x.outcome.includes('ct'))
 
-  return Array.from(Array(team1Outcomes.length))
+  return Array.from(Array(topLeftHalf.length + topRightHalf.length))
     .map((_, i) => {
       if (
         team1Outcomes[i].outcome === 'emptyHistory' &&
@@ -253,7 +263,7 @@ function getRoundHistory(
       let tTeam
       let ctTeam
 
-      if (i < separatorIndex) {
+      if (i <= topLeftHalf.length) {
         if (doesTeam1StartAsCt) {
           tTeam = team2.id!
           ctTeam = team1.id!
@@ -377,12 +387,12 @@ export function getPlayerStats(m$: HLTVPage, p$: HLTVPage) {
   }
 
   return {
-    team1: m$('.stats-table.totalstats')
+    team1: m$('.stats-table:not(.hidden)')
       .first()
       .find('tbody tr')
       .toArray()
       .map(getPlayerOverviewStats),
-    team2: m$('.stats-table.totalstats')
+    team2: m$('.stats-table:not(.hidden)')
       .last()
       .find('tbody tr')
       .toArray()
