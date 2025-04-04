@@ -1,5 +1,5 @@
 import * as cheerio from 'cheerio'
-import { parseNumber } from './utils'
+import {parseNumber} from './utils'
 
 export interface HLTVPage extends cheerio.Root {
   (selector: string): HLTVPageElement
@@ -35,7 +35,7 @@ export interface HLTVPageElement {
 }
 
 const attachMethods = (root: cheerio.Cheerio): HLTVPageElement => {
-  const obj: HLTVPageElement = {
+  return {
     length: root.length,
 
     find(selector: string): HLTVPageElement {
@@ -91,7 +91,7 @@ const attachMethods = (root: cheerio.Cheerio): HLTVPageElement => {
     },
 
     toArray(): HLTVPageElement[] {
-      return root.toArray().map(cheerio.default).map(attachMethods)
+      return root.toArray().map(el => attachMethods(cheerio.load(el).root()))
     },
 
     prev(selector?: string): HLTVPageElement {
@@ -122,7 +122,7 @@ const attachMethods = (root: cheerio.Cheerio): HLTVPageElement => {
       func: (index: number, element: HLTVPageElement) => boolean
     ): HLTVPageElement {
       return attachMethods(
-        root.filter((i, el) => func(i, attachMethods(cheerio.default(el))))
+        root.filter((i, el) => func(i, attachMethods(cheerio.load(el).root())))
       )
     },
 
@@ -130,8 +130,6 @@ const attachMethods = (root: cheerio.Cheerio): HLTVPageElement => {
       return root.index()
     }
   }
-
-  return obj
 }
 
 export const HLTVScraper = (root: cheerio.Root): HLTVPage => {

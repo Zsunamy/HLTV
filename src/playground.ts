@@ -24,4 +24,5 @@ const log = (promise: Promise<any>) =>
 // log(HLTV.getTeamRanking())
 // log(HLTV.getResults({ eventIds: [1617] }))
 // log(HLTV.getNews())
-// log(HLTV.getRssNews())
+console.log("testing...")
+log(HLTV.getRssNews())

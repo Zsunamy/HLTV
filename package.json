@@ -54,7 +54,7 @@
     "typescript": "5.8.2"
   },
   "dependencies": {
-    "cheerio": "1.0.0-rc.12",
+    "cheerio": "1.0.0",
     "got-scraping": "3.2.15",
     "socket.io-client": "2.4.0"
   }
