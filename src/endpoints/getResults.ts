@@ -100,21 +100,18 @@ export const getResults =
 
         let featuredResults = $('.big-results .result-con')
             .toArray()
-            .map((el) => el.children().first().attrThen('href', getIdAt(2)))
+            .map((el) => el.find('a').first().attrThen('href', getIdAt(2)))
 
-      results.push(
-        ...$('.result-con')
-          .toArray()
-          .map((el) => {
-            const id = el.children().first().attrThen('href', getIdAt(2))!
+        $('.result-con').each((i, el) => {
+            const id = el.find('a').first().attrThen('href', getIdAt(2))!
 
               if (featuredResults.includes(id)) {
                   featuredResults = featuredResults.filter((x) => x !== id)
-                  return null
+                  return
               }
             const stars = el.find('.stars i').length
             const date = el.numFromAttr('data-zonedgrouping-entry-unix')!
-              const eventName = el.find('.event-name').text()
+            const eventName = el.find('.event-name').text()
             const format = el.find('.map-text').text()
 
             const team1 = {
@@ -128,7 +125,7 @@ export const getResults =
             }
 
               const event = {
-                  name: el.find('.event-name').text(),
+                  name: el.find('.event-hub-title, .event-name').text(),
                   logo: el.find('img.event-logo').first().attr('src')
               }
             const [team1Result, team2Result] = el
@@ -137,21 +134,20 @@ export const getResults =
               .split(' - ')
               .map(Number)
 
-            return {
+            results.push({
               id,
               stars,
               date,
-                event,
+              event,
               team1,
               team2,
               result: { team1: team1Result, team2: team2Result },
               ...(format.includes('bo')
                 ? { format }
                 : { map: fromMapSlug(format), format: 'bo1' })
-            }
+            })
           })
-          .filter(notNull)
-      )
+
     } while ($('.result-con').exists())
 
     return results

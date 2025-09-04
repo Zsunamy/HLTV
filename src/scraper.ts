@@ -16,10 +16,14 @@ export interface HLTVPageElement {
   find(selector: string): HLTVPageElement
   attr(attr: string): string
   text(): string
+  html(): string
   textThen<T>(then: (value: string) => T): T
   first(): HLTVPageElement
   last(): HLTVPageElement
   toArray(): HLTVPageElement[]
+  each(
+    func: (index: number, element: HLTVPageElement) => void
+  ): HLTVPageElement
   data(name: string): any
   attrThen<T>(attr: string, then: (value: string) => T): T
   next(selector?: string): HLTVPageElement
@@ -52,6 +56,10 @@ const attachMethods = (root: cheerio.Cheerio): HLTVPageElement => {
 
     text(): string {
       return root.text()
+    },
+
+    html(): string {
+      return root.html()!
     },
 
     textThen<T>(then: (value: string) => T): T {
@@ -91,7 +99,14 @@ const attachMethods = (root: cheerio.Cheerio): HLTVPageElement => {
     },
 
     toArray(): HLTVPageElement[] {
-      return root.toArray().map(el => attachMethods(cheerio.load(el).root()))
+      return root.toArray().map(el => attachMethods(cheerio.load(el)(el)))
+    },
+
+    each(
+      func: (index: number, element: HLTVPageElement) => void
+    ): HLTVPageElement {
+      root.each((i, el) => func(i, attachMethods(cheerio.load(el)(el))))
+      return this
     },
 
     prev(selector?: string): HLTVPageElement {
@@ -122,7 +137,7 @@ const attachMethods = (root: cheerio.Cheerio): HLTVPageElement => {
       func: (index: number, element: HLTVPageElement) => boolean
     ): HLTVPageElement {
       return attachMethods(
-        root.filter((i, el) => func(i, attachMethods(cheerio.load(el).root())))
+        root.filter((i, el) => func(i, attachMethods(cheerio.load(el)(el))))
       )
     },
 
