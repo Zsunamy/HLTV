@@ -25,11 +25,6 @@ export enum MatchStatus {
   Deleted = 'Deleted'
 }
 
-export interface Demo {
-  name: string
-  link: string
-}
-
 export interface Highlight {
   link: string
   title: string
@@ -98,14 +93,13 @@ export interface FullMatch {
   winnerTeam?: FullMatchTeam
   vetoes: Veto[]
   event: Event
-  odds: ProviderOdds[]
   maps: MapResult[]
   players: {
     team1: Player[]
     team2: Player[]
   }
   streams: Stream[]
-  demos: Demo[]
+  demo: string
   highlightedPlayers?: {
     team1: Player
     team2: Player
@@ -125,7 +119,7 @@ export const getMatch =
       )
     )
 
-    const title = $('.timeAndEvent .text').trimText()
+    const title = $('.preformatted-text').text().split("*")[1].trim()
     const date = $('.timeAndEvent .date').numFromAttr('data-unix')
     const format = getFormat($)
     const significance = getMatchSignificance($)
@@ -136,12 +130,10 @@ export const getMatch =
     const team2 = getTeam($, 2)
     const vetoes = getVetoes($, team1, team2)
     const event = getEvent($)
-    const odds = getOdds($)
-    const oddsCommunity = getCommunityOdds($)
     const maps = getMaps($)
     const players = getPlayers($)
     const streams = getStreams($)
-    const demos = getDemos($)
+    const demo = 'https://www.hltv.org' + $('a.stream-box').attr('data-demo-link')!
     const highlightedPlayers = getHighlightedPlayers($)
     const headToHead = getHeadToHead($)
     const highlights = getHighlights($, team1, team2)
@@ -169,8 +161,7 @@ export const getMatch =
       headToHead,
       vetoes,
       highlights,
-      demos,
-      odds: odds.concat(oddsCommunity ? [oddsCommunity] : [])
+      demo
     }
   }
 
@@ -259,59 +250,6 @@ function getEvent($: HLTVPage): Event {
   return {
     name: $('.timeAndEvent .event a').text(),
     id: $('.timeAndEvent .event a').attrThen('href', getIdAt(2))
-  }
-}
-
-function getOdds($: HLTVPage): ProviderOdds[] {
-  return $('tr.provider:not(.hidden)')
-    .toArray()
-    .filter((el) => el.find('.noOdds').length === 0)
-    .map((oddElement) => {
-      const convertOdds =
-        oddElement.find('.odds-cell').first().text().indexOf('%') >= 0
-
-      const oddTeam1 = Number(
-        oddElement.find('.odds-cell').first().find('a').text().replace('%', '')
-      )
-
-      const oddTeam2 = Number(
-        oddElement.find('.odds-cell').last().find('a').text().replace('%', '')
-      )
-
-      return {
-        provider: oddElement
-          .find('td')
-          .first()
-          .find('a img')
-          .first()
-          .attr('title'),
-        team1: convertOdds ? percentageToDecimalOdd(oddTeam1) : oddTeam1,
-        team2: convertOdds ? percentageToDecimalOdd(oddTeam2) : oddTeam2
-      }
-    })
-}
-
-function getCommunityOdds($: HLTVPage): ProviderOdds | undefined {
-  if ($('.pick-a-winner').exists()) {
-    return {
-      provider: 'community',
-      team1: percentageToDecimalOdd(
-        Number(
-          $('.pick-a-winner-team.team1 > .percentage')
-            .first()
-            .text()
-            .replace('%', '')
-        )
-      ),
-      team2: percentageToDecimalOdd(
-        Number(
-          $('.pick-a-winner-team.team2 > .percentage')
-            .first()
-            .text()
-            .replace('%', '')
-        )
-      )
-    }
   }
 }
 
@@ -427,22 +365,6 @@ function getStreams($: HLTVPage): Stream[] {
           ]
         : []
     )
-}
-
-function getDemos($: HLTVPage): Demo[] {
-  return $('[class="stream-box"]:not(:has(.stream-box-embed))')
-    .toArray()
-    .map(function (demoEl) {
-      if (demoEl.attr('data-demo-link')) {
-        return { name: 'GOTV Demo', link: demoEl.attr('data-demo-link') }
-      }
-
-      return {
-        name: demoEl.text(),
-        link: demoEl.attr('data-stream-embed')
-      }
-    })
-    .filter((x) => !!x.link)
 }
 
 function getHighlightedPlayers($: HLTVPage) {

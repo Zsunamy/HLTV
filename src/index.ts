@@ -80,7 +80,6 @@ export { hltv as HLTV }
 
 export { MatchStatus } from './endpoints/getMatch'
 export type {
-  Demo,
   Highlight,
   Veto,
   HeadToHeadResult,

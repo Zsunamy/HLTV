@@ -19,6 +19,7 @@ export interface HLTVPageElement {
   html(): string
   textThen<T>(then: (value: string) => T): T
   first(): HLTVPageElement
+  second(): HLTVPageElement
   last(): HLTVPageElement
   toArray(): HLTVPageElement[]
   each(
@@ -68,6 +69,10 @@ const attachMethods = (root: cheerio.Cheerio): HLTVPageElement => {
 
     first(): HLTVPageElement {
       return attachMethods(root.first())
+    },
+
+    second(): HLTVPageElement {
+      return attachMethods(root.eq(1))
     },
 
     last(): HLTVPageElement {
