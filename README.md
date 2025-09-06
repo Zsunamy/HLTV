@@ -1,5 +1,7 @@
-> [!WARNING]  
-> This library is no longer actively maintained.
+> [!ATTENTION]
+> THis project is a fork of [gigobyte/HLTV](https://github.com/gigobyte/HLTV) which is no longer maintained.
+> A lot of functions are completely, some partly broken due to long time of inactivity. I'm slowly fixing things as I need them.
+> If you find something broken please open an issue or a PR if you can fix it yourself.
 
 
 <h1 align="center">
