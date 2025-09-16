@@ -11,6 +11,8 @@ export interface PlayerStats {
   killsPerRound?: number
   deathsPerRound?: number
   impact?: number
+  roundSwing?: number
+  multiKillRating?: number
   kills: number
   hsKills: number
   assists: number
@@ -20,8 +22,9 @@ export interface PlayerStats {
   killDeathsDifference: number
   ADR?: number
   firstKillsDifference: number
-  rating1?: number
-  rating2?: number
+  rating: number
+  ratingVersion: number
+
 }
 
 export interface TeamPerformance {
@@ -97,6 +100,11 @@ export interface FullMatchMapStats {
     team2: PlayerStats[]
   }
   performanceOverview: TeamsPerformanceOverview
+}
+
+interface PlayerCard {
+  label: string
+  displayValue: string
 }
 
 export const getMatchMapStats =
@@ -335,18 +343,32 @@ export function getPlayerStats(m$: HLTVPage, p$: HLTVPage) {
   const playerPerformanceStats = p$('.highlighted-player')
     .toArray()
     .reduce((map, el) => {
-      const graphData = el.find('.graph.small').attr('data-fusionchart-config')!
+      const graphData = JSON.parse(el.find('.graph.small').attr('data-fusionchart-config')!).data as PlayerCard[]
+      const rawPlayerStats = graphData.reduce(
+        (acc, card) => {
+          if (card.label.includes("Rating")) {
+            acc["ratingVersion"] = card.label.split(" ")[1]
+            acc["rating"] = card.displayValue
+            return acc
+          }
+          acc[card.label.toLowerCase()] = card.displayValue;
+          return acc;
+        },
+        {} as Record<string, string>
+      );
       const { playerId, ...data } = {
         playerId: Number(
           el.find('.headline span a').attr('href')!.split('/')[2]
         ),
-        killsPerRound: Number(
-          graphData.split('Kills per round: ')[1].split('"')[0]
-        ),
-        deathsPerRound: Number(
-          graphData.split('Deaths / round: ')[1].split('"')[0]
-        ),
-        impact: Number(graphData.split('Impact rating: ')[1].split('"')[0])
+        killsPerRound: Number(rawPlayerStats.KPR),
+        deathsPerRound: Number(rawPlayerStats.DPR),
+        rating: Number(rawPlayerStats.rating),
+        ratingVersion: Number(rawPlayerStats.ratingVersion),
+        impact: rawPlayerStats.hasOwnProperty('impact') ? Number(rawPlayerStats.impact) : undefined,
+        roundSwing: rawPlayerStats.hasOwnProperty('Swing') ? parseFloat(rawPlayerStats.Swing) : undefined,
+        multiKillRating: rawPlayerStats.hasOwnProperty('MK rating') ? Number(rawPlayerStats["MK Rating"]) : undefined,
+        ADR: rawPlayerStats.hasOwnProperty('ADR') ? Number(rawPlayerStats.ADR) : undefined,
+        KAST: rawPlayerStats.hasOwnProperty('KAST') ? parseFloat(rawPlayerStats.KAST) : undefined,
       }
 
       map[playerId] = data

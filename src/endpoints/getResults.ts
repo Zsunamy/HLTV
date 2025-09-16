@@ -3,8 +3,7 @@ import { HLTVConfig } from '../config'
 import { HLTVPage, HLTVScraper } from '../scraper'
 import { BestOfFilter } from '../shared/BestOfFilter'
 import { fromMapSlug, GameMap, toMapFilter } from '../shared/GameMap'
-import { RankingFilter } from '../shared/RankingFilter'
-import { fetchPage, getIdAt, notNull, sleep } from '../utils'
+import { fetchPage, getIdAt, sleep } from '../utils'
 
 export enum ResultsMatchType {
   LAN = 'Lan',
@@ -20,7 +19,8 @@ export enum ContentFilter {
 
 export enum GameType {
   CSGO = 'CSGO',
-  CS16 = 'CS16'
+  CS16 = 'CS16',
+  CS2 = 'CS2'
 }
 
 export interface ResultTeam {
@@ -38,7 +38,7 @@ export interface FullMatchResult {
   date: number
   team1: ResultTeam
   team2: ResultTeam
-    event: ResultEvent
+  event: ResultEvent
   stars: number
   format: string
   map?: GameMap
@@ -66,7 +66,7 @@ export interface GetResultsArguments {
 
 export const getResults =
   (config: HLTVConfig) =>
-  async (options: GetResultsArguments): Promise<FullMatchResult[]> => {
+  async (options: GetResultsArguments = {}): Promise<FullMatchResult[]> => {
     const query = stringify({
       ...(options.startDate ? { startDate: options.startDate } : {}),
       ...(options.endDate ? { endDate: options.endDate } : {}),
@@ -98,20 +98,11 @@ export const getResults =
 
       page++
 
-        let featuredResults = $('.big-results .result-con')
-            .toArray()
-            .map((el) => el.find('a').first().attrThen('href', getIdAt(2)))
-
         $('.result-con').each((i, el) => {
             const id = el.find('a').first().attrThen('href', getIdAt(2))!
 
-              if (featuredResults.includes(id)) {
-                  featuredResults = featuredResults.filter((x) => x !== id)
-                  return
-              }
             const stars = el.find('.stars i').length
             const date = el.numFromAttr('data-zonedgrouping-entry-unix')!
-            const eventName = el.find('.event-name').text()
             const format = el.find('.map-text').text()
 
             const team1 = {
