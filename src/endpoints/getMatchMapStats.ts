@@ -3,7 +3,7 @@ import { HLTVPage, HLTVPageElement, HLTVScraper } from '../scraper'
 import { fromMapName, GameMap } from '../shared/GameMap'
 import { Team } from '../shared/Team'
 import { Event } from '../shared/Event'
-import { fetchPage, getIdAt, notNull, parseNumber } from '../utils'
+import { fetchPage, getIdAt, notNull } from '../utils'
 import { Player } from '../shared/Player'
 
 export interface PlayerStats {
@@ -82,6 +82,7 @@ export interface MapStatsOverview {
   mostFirstKills: PlayerStat
   bestRating1?: PlayerStat
   bestRating2?: PlayerStat
+  bestRating3?: PlayerStat
 }
 
 export interface FullMatchMapStats {
@@ -214,6 +215,8 @@ export function getOverviewPropertyFromLabel(
       return 'bestRating1'
     case 'Best rating 2.0':
       return 'bestRating2'
+    case 'Best rating 3.0':
+      return 'bestRating3'
   }
 }
 
@@ -227,33 +230,46 @@ function getRoundHistory(
     score: el.attr('title')
   })
 
-  const topLeftHalf = $('.round-history-half')
-    .eq(0)
-    .find('img')
-    .toArray()
-    .map(getOutcome)
-  const bottomLeftHalf = $('.round-history-half')
-    .eq(2)
-    .find('img')
-    .toArray()
-    .map(getOutcome)
-  const topRightHalf = $('.round-history-half')
+  const firstHalfRoundsIndex = $('.round-history-team-row')
+    .first()
+    .find('.round-history-bar')
     .eq(1)
-    .find('img')
+    .index()
+
+  const team1RoundOutcomes = $('.round-history-team-row')
+    .eq(0)
+    .find('img.round-history-outcome')
+
+  const roundsPerHalf =
+    team1RoundOutcomes.filter((i) => i < firstHalfRoundsIndex).toArray()
+      .length - 3
+
+  let team1Outcomes = team1RoundOutcomes.toArray().map(getOutcome)
+  let team2Outcomes = $('.round-history-team-row')
+    .eq(1)
+    .find('img.round-history-outcome')
     .toArray()
     .map(getOutcome)
-  const bottomRightHalf = $('.round-history-half')
-    .eq(3)
-    .find('img')
-    .toArray()
-    .map(getOutcome)
+  const first1Round = team1Outcomes[0]
+  const first2Round = team2Outcomes[0]
+  const doesTeam1StartAsCt =
+    first1Round.score !== ''
+      ? first1Round.outcome === 'ct_win' ||
+        first1Round.outcome === 'bomb_defused' ||
+        first1Round.outcome === 'stopwatch'
+      : first2Round.outcome === 't_win' ||
+        first2Round.outcome === 'bomb_exploded'
 
-  const team1Outcomes = topLeftHalf.concat(topRightHalf)
-  const team2Outcomes = bottomLeftHalf.concat(bottomRightHalf)
+  const finalScore = team1Outcomes
+    .map((x) => x.score)
+    .reverse()
+    .find((s) => s !== '')!
+  const numRounds =
+    Number(finalScore.split('-')[0]) + Number(finalScore.split('-')[1])
+  team1Outcomes = team1Outcomes.slice(0, numRounds)
+  team2Outcomes = team2Outcomes.slice(0, numRounds)
 
-  const doesTeam1StartAsCt = topLeftHalf.some((x) => x.outcome.includes('ct'))
-
-  return Array.from(Array(topLeftHalf.length + topRightHalf.length))
+  return Array.from(Array(team1Outcomes.length))
     .map((_, i) => {
       if (
         team1Outcomes[i].outcome === 'emptyHistory' &&
@@ -275,7 +291,7 @@ function getRoundHistory(
       let tTeam
       let ctTeam
 
-      if (i <= topLeftHalf.length) {
+      if (i < roundsPerHalf) {
         if (doesTeam1StartAsCt) {
           tTeam = team2.id!
           ctTeam = team1.id!
@@ -335,12 +351,13 @@ export function getStatsOverview($: HLTVPage) {
           return res
         }
 
-        const playerHref = el.find('.name > a').attr('href')
+        const player = el.find('.name > a')
+        const playerHref = player.attr('href')
 
         res[prop] = {
           id: playerHref ? getIdAt(3, playerHref) : undefined,
-          name: $('.most-x-box').eq(i).find('.name > a').text(),
-          value: $('.most-x-box').eq(i).find('.valueName').numFromText()
+          name: player.text(),
+          value: el.find('.valueName').numFromText()
         }
 
         return res

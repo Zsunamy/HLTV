@@ -3,12 +3,7 @@ import { HLTVPage, HLTVPageElement, HLTVScraper } from '../scraper'
 import { fromMapName, GameMap } from '../shared/GameMap'
 import { Team } from '../shared/Team'
 import { Event } from '../shared/Event'
-import {
-  fetchPage,
-  generateRandomSuffix,
-  getIdAt,
-  parseNumber,
-} from '../utils'
+import { fetchPage, generateRandomSuffix, getIdAt, parseNumber } from '../utils'
 import { Player } from '../shared/Player'
 import {
   fromFullMatchFormat,

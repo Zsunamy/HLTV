@@ -108,7 +108,7 @@ const attachMethods = (root: cheerio.Cheerio): HLTVPageElement => {
     each(
       func: (index: number, element: HLTVPageElement) => void
     ): HLTVPageElement {
-      root.each((i, el) => func(i, attachMethods(cheerio.load(el)(el))))
+      root.each((i, el) => func(i, attachMethods(cheerio.load(el).root())))
       return this
     },
 
@@ -140,7 +140,7 @@ const attachMethods = (root: cheerio.Cheerio): HLTVPageElement => {
       func: (index: number, element: HLTVPageElement) => boolean
     ): HLTVPageElement {
       return attachMethods(
-        root.filter((i, el) => func(i, attachMethods(cheerio.load(el)(el))))
+        root.filter((i, el) => func(i, attachMethods(cheerio.load(el).root())))
       )
     },
 
