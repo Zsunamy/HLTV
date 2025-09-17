@@ -206,27 +206,30 @@ export const getTeamStats =
 
     const mapStats = mp$('.two-grid .col .stats-rows')
       .toArray()
-      .reduce((stats, mapEl) => {
-        const mapName = fromMapName(
-          mapEl.prev().find('.map-pool-map-name').text()
-        )
+      .reduce(
+        (stats, mapEl) => {
+          const mapName = fromMapName(
+            mapEl.prev().find('.map-pool-map-name').text()
+          )
 
-        const [wins, draws, losses] = getMapStat(mapEl, 0)
-          .split(' / ')
-          .map(Number)
+          const [wins, draws, losses] = getMapStat(mapEl, 0)
+            .split(' / ')
+            .map(Number)
 
-        stats[mapName] = {
-          wins,
-          draws,
-          losses,
-          winRate: Number(getMapStat(mapEl, 1).split('%')[0]),
-          totalRounds: Number(getMapStat(mapEl, 2)),
-          roundWinPAfterFirstKill: Number(getMapStat(mapEl, 3).split('%')[0]),
-          roundWinPAfterFirstDeath: Number(getMapStat(mapEl, 4).split('%')[0])
-        }
+          stats[mapName] = {
+            wins,
+            draws,
+            losses,
+            winRate: Number(getMapStat(mapEl, 1).split('%')[0]),
+            totalRounds: Number(getMapStat(mapEl, 2)),
+            roundWinPAfterFirstKill: Number(getMapStat(mapEl, 3).split('%')[0]),
+            roundWinPAfterFirstDeath: Number(getMapStat(mapEl, 4).split('%')[0])
+          }
 
-        return stats
-      }, {} as Record<string, any>)
+          return stats
+        },
+        {} as Record<string, any>
+      )
 
     return {
       id: options.id,

@@ -1,5 +1,5 @@
 import * as cheerio from 'cheerio'
-import {parseNumber} from './utils'
+import { parseNumber } from './utils'
 
 export interface HLTVPage extends cheerio.Root {
   (selector: string): HLTVPageElement
@@ -22,9 +22,7 @@ export interface HLTVPageElement {
   second(): HLTVPageElement
   last(): HLTVPageElement
   toArray(): HLTVPageElement[]
-  each(
-    func: (index: number, element: HLTVPageElement) => void
-  ): HLTVPageElement
+  each(func: (index: number, element: HLTVPageElement) => void): HLTVPageElement
   data(name: string): any
   attrThen<T>(attr: string, then: (value: string) => T): T
   next(selector?: string): HLTVPageElement
@@ -104,7 +102,7 @@ const attachMethods = (root: cheerio.Cheerio): HLTVPageElement => {
     },
 
     toArray(): HLTVPageElement[] {
-      return root.toArray().map(el => attachMethods(cheerio.load(el)(el)))
+      return root.toArray().map((el) => attachMethods(cheerio.load(el)(el)))
     },
 
     each(

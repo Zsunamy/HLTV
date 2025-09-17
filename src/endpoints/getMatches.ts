@@ -55,32 +55,47 @@ export const getMatches =
       await fetchPage(`https://www.hltv.org/matches?${query}`, config.loadPage)
     )
 
-
     return $('.match-wrapper:has(.match-event)')
       .toArray()
       .map((el) => {
         const id = el.numFromAttr('data-match-id')!
         const stars = el.numFromAttr('data-stars')!
-        const ranked = el.attr('data-eventtype') === "ranked"
+        const ranked = el.attr('data-eventtype') === 'ranked'
         const region = el.attr('data-region')
-        const lan = el.attr('lan') === "lan"
-        const live  = el.attr('live') === "true"
-        const date = live ? undefined : el.find(".match-time").numFromAttr('data-unix')
+        const lan = el.attr('lan') === 'lan'
+        const live = el.attr('live') === 'true'
+        const date = live
+          ? undefined
+          : el.find('.match-time').numFromAttr('data-unix')
         const team1 = {
           id: el.numFromAttr('team1'),
-          name: el.find(".team1 > .match-teamname").first().text()
-
+          name: el.find('.team1 > .match-teamname').first().text()
         }
         const team2 = {
           id: el.numFromAttr('team2'),
-          name: el.find(".team2 > .match-teamname").text()
+          name: el.find('.team2 > .match-teamname').text()
         }
         const event = {
           id: el.numFromAttr('data-event-id'),
-          name: el.find(".match-event").first().attr("data-event-headline")
+          name: el.find('.match-event').first().attr('data-event-headline')
         }
-        const format = el.find(".match-info > :not(match-meta-live)").first().text()
+        const format = el
+          .find('.match-info > :not(match-meta-live)')
+          .first()
+          .text()
 
-        return { id, date, stars, team1, team2, format, event, live, lan, region, ranked }
+        return {
+          id,
+          date,
+          stars,
+          team1,
+          team2,
+          format,
+          event,
+          live,
+          lan,
+          region,
+          ranked
+        }
       })
   }

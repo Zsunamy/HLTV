@@ -18,13 +18,17 @@ export interface PlayerStats {
   assists: number
   flashAssists: number
   deaths: number
+  deathsTraded: number
+  openingKills: number
+  openingDeaths: number
+  multiKillRounds: number
+  clutches: number
   KAST?: number
   killDeathsDifference: number
   ADR?: number
   firstKillsDifference: number
   rating: number
   ratingVersion: number
-
 }
 
 export interface TeamPerformance {
@@ -303,38 +307,46 @@ export function getStatsOverview($: HLTVPage) {
   const teamStats = $('.match-info-row')
     .toArray()
     .slice(1)
-    .reduce((res, el, i) => {
-      const prop = getOverviewPropertyFromLabel(el.find('.bold').text())
+    .reduce(
+      (res, el, _) => {
+        const prop = getOverviewPropertyFromLabel(el.find('.bold').text())
 
-      if (!prop) {
+        if (!prop) {
+          return res
+        }
+
+        const [team1, team2] = el.find('.right').text().split(' : ').map(Number)
+        res[prop] = { team1, team2 }
+
         return res
-      }
-
-      const [team1, team2] = el.find('.right').text().split(' : ').map(Number)
-      res[prop] = { team1, team2 }
-
-      return res
-    }, {} as Record<string, any>)
+      },
+      {} as Record<string, any>
+    )
 
   const mostX = $('.most-x-box')
     .toArray()
-    .reduce((res, el, i) => {
-      const prop = getOverviewPropertyFromLabel(el.find('.most-x-title').text())
+    .reduce(
+      (res, el, i) => {
+        const prop = getOverviewPropertyFromLabel(
+          el.find('.most-x-title').text()
+        )
 
-      if (!prop) {
+        if (!prop) {
+          return res
+        }
+
+        const playerHref = el.find('.name > a').attr('href')
+
+        res[prop] = {
+          id: playerHref ? getIdAt(3, playerHref) : undefined,
+          name: $('.most-x-box').eq(i).find('.name > a').text(),
+          value: $('.most-x-box').eq(i).find('.valueName').numFromText()
+        }
+
         return res
-      }
-
-      const playerHref = el.find('.name > a').attr('href')
-
-      res[prop] = {
-        id: playerHref ? getIdAt(3, playerHref) : undefined,
-        name: $('.most-x-box').eq(i).find('.name > a').text(),
-        value: $('.most-x-box').eq(i).find('.valueName').numFromText()
-      }
-
-      return res
-    }, {} as Record<string, any>)
+      },
+      {} as Record<string, any>
+    )
 
   return { ...teamStats, ...mostX } as any
 }
@@ -342,44 +354,58 @@ export function getStatsOverview($: HLTVPage) {
 export function getPlayerStats(m$: HLTVPage, p$: HLTVPage) {
   const playerPerformanceStats = p$('.highlighted-player')
     .toArray()
-    .reduce((map, el) => {
-      const graphData = JSON.parse(el.find('.graph.small').attr('data-fusionchart-config')!).data as PlayerCard[]
-      const rawPlayerStats = graphData.reduce(
-        (acc, card) => {
-          if (card.label.includes("Rating")) {
-            acc["ratingVersion"] = card.label.split(" ")[1]
-            acc["rating"] = card.displayValue
+    .reduce(
+      (map, el) => {
+        const graphData = JSON.parse(
+          el.find('.graph.small').attr('data-fusionchart-config')!
+        ).dataSource.data as PlayerCard[]
+        const rawPlayerStats = graphData.reduce(
+          (acc, card) => {
+            if (card.label.includes('Rating')) {
+              acc['ratingVersion'] = card.label.split(' ')[1]
+              acc['rating'] = card.displayValue
+              return acc
+            }
+            acc[card.label.toLowerCase()] = card.displayValue
             return acc
-          }
-          acc[card.label.toLowerCase()] = card.displayValue;
-          return acc;
-        },
-        {} as Record<string, string>
-      );
-      const { playerId, ...data } = {
-        playerId: Number(
-          el.find('.headline span a').attr('href')!.split('/')[2]
-        ),
-        killsPerRound: Number(rawPlayerStats.KPR),
-        deathsPerRound: Number(rawPlayerStats.DPR),
-        rating: Number(rawPlayerStats.rating),
-        ratingVersion: Number(rawPlayerStats.ratingVersion),
-        impact: rawPlayerStats.hasOwnProperty('impact') ? Number(rawPlayerStats.impact) : undefined,
-        roundSwing: rawPlayerStats.hasOwnProperty('Swing') ? parseFloat(rawPlayerStats.Swing) : undefined,
-        multiKillRating: rawPlayerStats.hasOwnProperty('MK rating') ? Number(rawPlayerStats["MK Rating"]) : undefined,
-        ADR: rawPlayerStats.hasOwnProperty('ADR') ? Number(rawPlayerStats.ADR) : undefined,
-        KAST: rawPlayerStats.hasOwnProperty('KAST') ? parseFloat(rawPlayerStats.KAST) : undefined,
-      }
+          },
+          {} as Record<string, string>
+        )
+        const { playerId, ...data } = {
+          playerId: Number(
+            el.find('.headline span a').attr('href')!.split('/')[2]
+          ),
+          killsPerRound: Number(rawPlayerStats.kpr),
+          deathsPerRound: Number(rawPlayerStats.dpr),
+          rating: Number(rawPlayerStats.rating),
+          ratingVersion: Number(rawPlayerStats.ratingVersion),
+          impact: rawPlayerStats.hasOwnProperty('impact')
+            ? Number(rawPlayerStats.impact)
+            : undefined,
+          roundSwing: rawPlayerStats.hasOwnProperty('swing')
+            ? Number(rawPlayerStats.swing.replace('%', ''))
+            : undefined,
+          multiKillRating: rawPlayerStats.hasOwnProperty('mk rating')
+            ? Number(rawPlayerStats['mk rating'])
+            : undefined,
+          ADR: rawPlayerStats.hasOwnProperty('adr')
+            ? Number(rawPlayerStats.adr)
+            : undefined,
+          KAST: rawPlayerStats.hasOwnProperty('kast')
+            ? Number(rawPlayerStats.kast.replace('%', ''))
+            : undefined
+        }
 
-      map[playerId] = data
+        map[playerId] = data
 
-      return map
-    }, {} as Record<string, Partial<PlayerStats>>)
+        return map
+      },
+      {} as Record<string, Partial<PlayerStats>>
+    )
 
   const getPlayerOverviewStats = (el: HLTVPageElement) => {
     const id = el.find('.st-player a').attrThen('href', getIdAt(3))!
     const performanceStats = playerPerformanceStats[id]
-    const rating = el.find('.st-rating').numFromText()
 
     return {
       player: {
@@ -388,22 +414,20 @@ export function getPlayerStats(m$: HLTVPage, p$: HLTVPage) {
       },
       kills: el.find('.st-kills').contents().first().numFromText()!,
       hsKills: Number(
-        el.find('.st-kills .gtSmartphone-only').text().replace(/\(|\)/g, '')
+        el.find('.st-kills .gtSmartphone-only').text().replace(/[()]/g, '')
       ),
       assists: el.find('.st-assists').contents().first().numFromText()!,
       flashAssists: Number(
-        el.find('.st-assists .gtSmartphone-only').text().replace(/\(|\)/g, '')
+        el.find('.st-assists .gtSmartphone-only').text().replace(/[()]/g, '')
       ),
-      deaths: el.find('.st-deaths').numFromText()!,
-      KAST: el
-        .find('.st-kdratio')
-        .textThen((x) => parseNumber(x.replace('%', ''))),
-      killDeathsDifference: el.find('.st-kddiff').numFromText(),
-      ADR: el.find('.st-adr').numFromText(),
-      firstKillsDifference: el.find('.st-fkdiff').numFromText(),
-      ...(el.find('.st-rating .ratingDesc').text() === '2.0'
-        ? { rating2: rating }
-        : { rating1: rating }),
+      deaths: el.find('.st-deaths').contents().first().numFromText()!,
+      deathsTraded: Number(
+        el.find('.st-deaths .gtSmartphone-only').text().replace(/[()]/g, '')
+      ),
+      openingKills: Number(el.find('.st-opkd').text().split(' : ')[0]),
+      openingDeaths: Number(el.find('.st-opkd').text().split(' : ')[1]),
+      multiKillRounds: el.find('.st-mks').numFromText()!,
+      clutches: el.find('.st-clutches').numFromText()!,
       ...(performanceStats as any)
     }
   }

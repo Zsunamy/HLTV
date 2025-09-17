@@ -94,11 +94,14 @@ export const getEvent =
     const prizeDistribution = $('.placements .placement')
       .toArray()
       .map((el) => {
-        const otherPrize =
-          el.find('.prize').first().next().text() || undefined
+        const otherPrize = el.find('.prize').first().next().text() || undefined
 
         const qualifiesFor = !!otherPrize
-          ? relatedEvents.find((event) => event.name.includes(otherPrize.replace(new RegExp('S([0-9]+)', 'gm'), "Season $1")))
+          ? relatedEvents.find((event) =>
+              event.name.includes(
+                otherPrize.replace(new RegExp('S([0-9]+)', 'gm'), 'Season $1')
+              )
+            )
           : undefined
 
         return {

@@ -8,7 +8,6 @@ import {
   generateRandomSuffix,
   getIdAt,
   parseNumber,
-  percentageToDecimalOdd
 } from '../utils'
 import { Player } from '../shared/Player'
 import {
@@ -119,7 +118,7 @@ export const getMatch =
       )
     )
 
-    const title = $('.preformatted-text').text().split("*")[1].trim()
+    const title = $('.preformatted-text').text().split('*')[1].trim()
     const date = $('.timeAndEvent .date').numFromAttr('data-unix')
     const format = getFormat($)
     const significance = getMatchSignificance($)
@@ -133,7 +132,8 @@ export const getMatch =
     const maps = getMaps($)
     const players = getPlayers($)
     const streams = getStreams($)
-    const demo = 'https://www.hltv.org' + $('a.stream-box').attr('data-demo-link')!
+    const demo =
+      'https://www.hltv.org' + $('a.stream-box').attr('data-demo-link')!
     const highlightedPlayers = getHighlightedPlayers($)
     const headToHead = getHeadToHead($)
     const highlights = getHighlights($, team1, team2)
@@ -282,7 +282,7 @@ function getMaps($: HLTVPage): MapResult[] {
         if (halfsString) {
           halfs = halfsString
             .split(' ')
-            .map((x) => x.replace(/\(|\)|;/g, ''))
+            .map((x) => x.replace(/[();]/g, ''))
             .map((half) => ({
               team1Rounds: Number(half.split(':')[0]),
               team2Rounds: Number(half.split(':')[1])

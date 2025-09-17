@@ -29,8 +29,8 @@ export interface ResultTeam {
 }
 
 export interface ResultEvent {
-    name: string
-    logo: string
+  name: string
+  logo: string
 }
 
 export interface FullMatchResult {
@@ -98,47 +98,45 @@ export const getResults =
 
       page++
 
-        $('.result-con').each((i, el) => {
-            const id = el.find('a').first().attrThen('href', getIdAt(2))!
+      $(':not(.big-results) .result-con').each((i, el) => {
+        const id = el.find('a').first().attrThen('href', getIdAt(2))!
+        const stars = el.find('.stars i').length
+        const date = el.numFromAttr('data-zonedgrouping-entry-unix')!
+        const format = el.find('.map-text').text()
 
-            const stars = el.find('.stars i').length
-            const date = el.numFromAttr('data-zonedgrouping-entry-unix')!
-            const format = el.find('.map-text').text()
+        const team1 = {
+          name: el.find('div.team').first().text(),
+          logo: el.find('img.team-logo').first().attr('src')
+        }
 
-            const team1 = {
-              name: el.find('div.team').first().text(),
-              logo: el.find('img.team-logo').first().attr('src')
-            }
+        const team2 = {
+          name: el.find('div.team').last().text(),
+          logo: el.find('img.team-logo').last().attr('src')
+        }
 
-            const team2 = {
-              name: el.find('div.team').last().text(),
-              logo: el.find('img.team-logo').last().attr('src')
-            }
+        const event = {
+          name: el.find('.event-hub-title, .event-name').text(),
+          logo: el.find('img.event-logo').first().attr('src')
+        }
+        const [team1Result, team2Result] = el
+          .find('.result-score')
+          .text()
+          .split(' - ')
+          .map(Number)
 
-              const event = {
-                  name: el.find('.event-hub-title, .event-name').text(),
-                  logo: el.find('img.event-logo').first().attr('src')
-              }
-            const [team1Result, team2Result] = el
-              .find('.result-score')
-              .text()
-              .split(' - ')
-              .map(Number)
-
-            results.push({
-              id,
-              stars,
-              date,
-              event,
-              team1,
-              team2,
-              result: { team1: team1Result, team2: team2Result },
-              ...(format.includes('bo')
-                ? { format }
-                : { map: fromMapSlug(format), format: 'bo1' })
-            })
-          })
-
+        results.push({
+          id,
+          stars,
+          date,
+          event,
+          team1,
+          team2,
+          result: { team1: team1Result, team2: team2Result },
+          ...(format.includes('bo')
+            ? { format }
+            : { map: fromMapSlug(format), format: 'bo1' })
+        })
+      })
     } while ($('.result-con').exists())
 
     return results
