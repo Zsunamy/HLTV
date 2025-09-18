@@ -54,8 +54,8 @@ export const getMatches =
     const $ = HLTVScraper(
       await fetchPage(`https://www.hltv.org/matches?${query}`, config.loadPage)
     )
-
-    return $('.match-wrapper:has(.match-event)')
+    // all live matches
+    const liveMatches = $('.liveMatches > .match-wrapper')
       .toArray()
       .map((el) => {
         const id = el.numFromAttr('data-match-id')!
@@ -64,24 +64,21 @@ export const getMatches =
         const region = el.attr('data-region')
         const lan = el.attr('lan') === 'lan'
         const live = el.attr('live') === 'true'
-        const date = live
-          ? undefined
-          : el.find('.match-time').numFromAttr('data-unix')
+        const date = undefined
         const team1 = {
           id: el.numFromAttr('team1'),
-          name: el.find('.team1 > .match-teamname').first().text()
+          name: el.find('.match-teamname').first().text()
         }
         const team2 = {
           id: el.numFromAttr('team2'),
-          name: el.find('.team2 > .match-teamname').text()
+          name: el.find('.match-teamname').second().text()
         }
         const event = {
           id: el.numFromAttr('data-event-id'),
           name: el.find('.match-event').first().attr('data-event-headline')
         }
         const format = el
-          .find('.match-info > :not(match-meta-live)')
-          .first()
+          .find('.match-meta:not(.match-meta-live)')
           .text()
 
         return {
@@ -98,4 +95,53 @@ export const getMatches =
           ranked
         }
       })
+
+    const upcomingMatches = $('.matches-event-wrapper')
+      .toArray()
+      .map(el => {
+        const event = {
+          id: el.find('.event-headline-wrapper').numFromAttr('data-event-id'),
+          name: el.find('.event-headline-wrapper').attr('data-event-headline')
+        }
+
+        return el.find('.match-wrapper')
+          .toArray()
+          .map(matchEl => {
+            const id = matchEl.numFromAttr('data-match-id')!
+            const stars = matchEl.numFromAttr('data-stars')!
+            const ranked = matchEl.attr('data-eventtype') === 'ranked'
+            const region = matchEl.attr('data-region')
+            const lan = matchEl.attr('lan') === 'lan'
+            const live = matchEl.attr('live') === 'true'
+            const date = matchEl.find('.match-time').numFromAttr('data-unix')
+            const team1 = {
+              id: matchEl.numFromAttr('team1'),
+              name: matchEl.find('.match-teamname').first().text()
+            }
+            const team2 = {
+              id: matchEl.numFromAttr('team2'),
+              name: matchEl.find('.match-teamname').second().text()
+            }
+
+            const format = matchEl
+              .find('.match-meta')
+              .first()
+              .text()
+
+            return {
+              id,
+              date,
+              stars,
+              team1,
+              team2,
+              format,
+              event,
+              live,
+              lan,
+              region,
+              ranked
+            }
+          })
+      })
+    return [...liveMatches, ...upcomingMatches.flat()]
   }

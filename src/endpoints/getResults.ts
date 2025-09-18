@@ -98,7 +98,7 @@ export const getResults =
 
       page++
 
-      $(':not(.big-results) .result-con').each((i, el) => {
+      $('.result-con:not(.big-results .result-con)').each((i, el) => {
         const id = el.find('a').first().attrThen('href', getIdAt(2))!
         const stars = el.find('.stars i').length
         const date = el.numFromAttr('data-zonedgrouping-entry-unix')!
@@ -137,7 +137,7 @@ export const getResults =
             : { map: fromMapSlug(format), format: 'bo1' })
         })
       })
-    } while ($('.result-con').exists())
+    } while ($('.result-con:not(.big-results .result-con)').exists())
 
     return results
   }
